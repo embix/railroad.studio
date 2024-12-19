@@ -434,7 +434,7 @@ export class RailroadMap {
 
     toggleLegacyRotate(): boolean {
         this.legacyRotate = !this.legacyRotate;
-        this.render();
+        this.refresh();
         return this.legacyRotate;
     }
 
