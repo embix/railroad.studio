@@ -96,20 +96,6 @@ export class Studio {
         });
         content.replaceChildren(mapDiv);
         this.map = new RailroadMap(this, mapDiv);
-        // Rotate 180 Button for legacy version maps
-        const btnLegacyRotate = document.createElement('button');
-        btnLegacyRotate.textContent = 'Legacy Rotation 180°';
-        btnLegacyRotate.classList.add('btn', 'btn-secondary');
-        btnLegacyRotate.addEventListener('click', () => {
-            const legacyRotateEnabled = this.map.toggleLegacyRotate();
-            if (legacyRotateEnabled) {
-                btnLegacyRotate.classList.add('active', 'btn-danger');
-                btnLegacyRotate.classList.remove('btn-secondary');
-            } else {
-                btnLegacyRotate.classList.remove('active', 'btn-danger');
-                btnLegacyRotate.classList.add('btn-secondary');
-            }
-        });
 
         // Layers dropdown
         const txtLayers = document.createTextNode(' Layers ');
@@ -468,6 +454,22 @@ export class Studio {
             btnAction.addEventListener('click', action.onClick);
             return btnAction;
         }));
+
+        // Rotate 180 Button for legacy version maps
+        const btnLegacyRotate = document.createElement('button');
+        btnLegacyRotate.textContent = 'Legacy Rotation 180°';
+        btnLegacyRotate.classList.add('btn', 'btn-secondary');
+        btnLegacyRotate.addEventListener('click', () => {
+            const legacyRotateEnabled = this.map.toggleLegacyRotate();
+            if (legacyRotateEnabled) {
+                btnLegacyRotate.classList.add('active', 'btn-danger');
+                btnLegacyRotate.classList.remove('btn-secondary');
+            } else {
+                btnLegacyRotate.classList.remove('active', 'btn-danger');
+                btnLegacyRotate.classList.add('btn-secondary');
+            }
+        });
+
         // Rerail frame tool
         const btnRerail = document.createElement('button');
         const imgRerail = bootstrapIcon('bi-train-front', 'Rerail Frame Tool');
@@ -709,6 +711,7 @@ export class Studio {
         mapButtons.classList.add('hstack', 'gap-2');
         mapButtons.replaceChildren(
             grpLayers,
+            btnLegacyRotate,
             btnDelete,
         );
         if (hasFrames) {
