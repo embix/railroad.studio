@@ -142,6 +142,7 @@ export class RailroadMap {
     private locator?: Circle | undefined;
     private remainingTreesAppender?: (trees: Vector[]) => Promise<void>;
     private readonly mergeLimits: MergeLimits;
+    private rotate180fix = true;
 
     constructor(studio: Studio, element: HTMLElement) {
         this.setMapModified = (affectsSplines = false) => studio.setMapModified(affectsSplines);
@@ -663,7 +664,7 @@ export class RailroadMap {
 
     private createLayers(): MapLayers {
         const group = this.svg.group()
-            .rotate(180)
+            .rotate(180 * (this.rotate180fix ? 0 : 1))
             .font('family', 'sans-serif')
             .font('size', 500);
         // The z-order of these groups is the order they are created
