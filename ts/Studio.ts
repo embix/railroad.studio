@@ -458,7 +458,11 @@ export class Studio {
         // Rotate 180 Button for legacy version maps
         const btnLegacyRotate = document.createElement('button');
         btnLegacyRotate.textContent = 'Legacy Rotation 180°';
-        btnLegacyRotate.classList.add('btn', 'btn-secondary');
+        if (this.map.isInLegacyOrientationMode()) {
+            btnLegacyRotate.classList.add('active', 'btn-danger');
+        } else {
+            btnLegacyRotate.classList.add('btn', 'btn-secondary');
+        }
         btnLegacyRotate.addEventListener('click', () => {
             const legacyRotateEnabled = this.map.toggleLegacyRotate();
             if (legacyRotateEnabled) {
@@ -711,9 +715,14 @@ export class Studio {
         mapButtons.classList.add('hstack', 'gap-2');
         mapButtons.replaceChildren(
             grpLayers,
-            btnLegacyRotate,
             btnDelete,
         );
+        if (this.map.isLegacyRotationSaveGame()) {
+            // show rotate button only for legacy maps
+            [
+                btnLegacyRotate,
+            ].forEach((e) => mapButtons.insertBefore(e, btnDelete));
+        }
         if (hasFrames) {
             // Enable tools that work on frames
             [

@@ -115,6 +115,9 @@ const DEFAULT_LAYER_VISIBILITY: MapLayerVisibility = {
     turntables: true,
 };
 
+// this is just a guess and could be determined with binary search given enough old savegames
+const ROTATION_FIX_SAVE_GAME_VERSION = 231117;
+
 /**
  * The RailroadMap class is used to create a visual representation of a Railroad
  * object on a web page and provide tools for interacting with it. It can render
@@ -151,6 +154,7 @@ export class RailroadMap {
         this.setMapModified = (affectsSplines = false) => studio.setMapModified(affectsSplines);
         this.setTitle = (title) => studio.setTitle(title);
         this.railroad = studio.railroad;
+        this.legacyRotate = this.isLegacyRotationSaveGame();
         this.treeUtil = new TreeUtil(studio, async (before, after, changed, dryrun) => {
             if (this.remainingTreesAppender) await this.renderTreeArray(changed);
             if (before === after) {
@@ -436,6 +440,16 @@ export class RailroadMap {
         this.legacyRotate = !this.legacyRotate;
         this.refresh();
         return this.legacyRotate;
+    }
+    isInLegacyOrientationMode(): boolean {
+        // it may be more appropriate to merge legacyRotate and isInLegacyOrientationMode
+        // into a public property
+        // DISCLAIMER I am neither a typescript nor js guy, so tell me what you think
+        return this.legacyRotate;
+    }
+    isLegacyRotationSaveGame(): boolean {
+        const currentVersion = Number(this.railroad.saveGame.version);
+        return currentVersion < ROTATION_FIX_SAVE_GAME_VERSION;
     }
 
     private parallelToolTracksFlag = false;
