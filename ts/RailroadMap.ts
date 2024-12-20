@@ -115,6 +115,9 @@ const DEFAULT_LAYER_VISIBILITY: MapLayerVisibility = {
     turntables: true,
 };
 
+// this is just a guess and could be determined with binary search given enough old savegames
+const ROTATION_FIX_SAVE_GAME_VERSION = 231117;
+
 /**
  * The RailroadMap class is used to create a visual representation of a Railroad
  * object on a web page and provide tools for interacting with it. It can render
@@ -143,10 +146,15 @@ export class RailroadMap {
     private remainingTreesAppender?: (trees: Vector[]) => Promise<void>;
     private readonly mergeLimits: MergeLimits;
 
+    // required for later beta and release maps of RRO
+    // older maps should still be 180 degrees rotated to match the in-game map
+    private legacyRotate = false;
+
     constructor(studio: Studio, element: HTMLElement) {
         this.setMapModified = (affectsSplines = false) => studio.setMapModified(affectsSplines);
         this.setTitle = (title) => studio.setTitle(title);
         this.railroad = studio.railroad;
+        this.legacyRotate = this.isLegacyRotationSaveGame();
         this.treeUtil = new TreeUtil(studio, async (before, after, changed, dryrun) => {
             if (this.remainingTreesAppender) await this.renderTreeArray(changed);
             if (before === after) {
@@ -428,6 +436,22 @@ export class RailroadMap {
         return this.layerVisibility[layer];
     }
 
+    toggleLegacyRotate(): boolean {
+        this.legacyRotate = !this.legacyRotate;
+        this.refresh();
+        return this.legacyRotate;
+    }
+    isInLegacyOrientationMode(): boolean {
+        // it may be more appropriate to merge legacyRotate and isInLegacyOrientationMode
+        // into a public property
+        // DISCLAIMER I am neither a typescript nor js guy, so tell me what you think
+        return this.legacyRotate;
+    }
+    isLegacyRotationSaveGame(): boolean {
+        const currentVersion = Number(this.railroad.saveGame.version);
+        return currentVersion < ROTATION_FIX_SAVE_GAME_VERSION;
+    }
+
     private parallelToolTracksFlag = false;
     toggleParallelTool(): boolean {
         if (this.toolMode === MapToolMode.parallel) {
@@ -663,7 +687,7 @@ export class RailroadMap {
 
     private createLayers(): MapLayers {
         const group = this.svg.group()
-            .rotate(180)
+            .rotate(this.legacyRotate ? 180 : 0)
             .font('family', 'sans-serif')
             .font('size', 500);
         // The z-order of these groups is the order they are created
