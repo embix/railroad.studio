@@ -778,7 +778,13 @@ export class RailroadMap {
             transform = 'matrix(-139.13,0,0,-139.13,300900,300900)';
         } else {
             image = 'PineValleyTopo.png';
-            transform = 'matrix(-96.80,0,0,-96.80,199951,199951)';
+            // transform = 'matrix(-96.80,0,0,-96.80,199951,199951)'; // works for old map file
+
+            // for renewed rotated map (is 180deg wrong tho)
+            // transform = 'matrix(-93.81,0,0,93.81,199953,-199953)';
+
+            // orientation somewhat matches, but position/scale or both are off
+            transform = 'matrix(93.81,0,0,-93.81,-199953,199953)';
         }
         return this.layers.background
             .image(image)
